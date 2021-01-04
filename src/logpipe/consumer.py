@@ -48,6 +48,10 @@ def consumer_error_handler(inner):
             logger.warning("Skipping invalid message in topic {}. Details: {}".format(inner.consumer.topic_name, e))
             inner.commit(e.message)
 
+        except Exception as e:
+            logger.error("Skipping unknown exception in topic {}. Details: {}".format(inner.consumer.topic_name, e))
+            inner.commit(e.message)
+
         pass
 
 
