@@ -173,4 +173,7 @@ class MultiConsumer(object):
 
     def run(self):
         for consumer in itertools.cycle(self.consumers):
-            consumer.run(iter_limit=1)
+            try:
+                consumer.run(iter_limit=1)
+            except Exception as error:
+                logger.exception(error)
