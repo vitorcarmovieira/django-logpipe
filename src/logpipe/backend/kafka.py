@@ -101,11 +101,9 @@ class Consumer(object):
             'enable_auto_commit': False,
             'consumer_timeout_ms': 1000,
         }
-        kwargs.update(settings.get('KAFKA_CONSUMER_KWARGS', {}))
+        kwargs.update(self._get_server())
         kwargs.update(self.client_kwargs)
-        kwargs.update({
-            'bootstrap_servers': self._get_server(),
-        })
+        
         return kwargs
     
     def _get_server(self):
