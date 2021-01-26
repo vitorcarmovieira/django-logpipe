@@ -1,5 +1,5 @@
 from django.apps import apps
-from ..exceptions import MissingTopicError
+from ..exceptions import ImproperlyConfigured, MissingTopicError
 from .. import settings
 from . import RecordMetadata, Record, get_offset_backend
 import kafka
@@ -8,7 +8,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-
+DEFAULT_SERVER_ALIAS = "default"
 
 class ModelOffsetStore(object):
     def commit(self, consumer, message):
@@ -104,9 +104,22 @@ class Consumer(object):
         kwargs.update(settings.get('KAFKA_CONSUMER_KWARGS', {}))
         kwargs.update(self.client_kwargs)
         kwargs.update({
-            'bootstrap_servers': settings.get('KAFKA_BOOTSTRAP_SERVERS'),
+            'bootstrap_servers': self._get_server(),
         })
         return kwargs
+    
+    def _get_server(self):
+        servers = settings.get('KAFKA_BOOTSTRAP_SERVERS')
+        if DEFAULT_SERVER_ALIAS not in servers:
+            raise ImproperlyConfigured(f"You must define a '{DEFAULT_SERVER_ALIAS}' bootstrap server")
+        
+        consumers_conf = settings.get('CONSUMERS', {})
+        
+        if self.topic_name in consumers_conf:
+            return consumers_conf[self.topic_name]["bootstrap_server"]
+        else:
+            return servers[DEFAULT_SERVER_ALIAS]
+
 
 
 

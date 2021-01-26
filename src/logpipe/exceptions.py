@@ -24,3 +24,8 @@ class InvalidMessageError(LogPipeError):
 
 class MissingTopicError(LogPipeError):
     pass
+
+
+class ImproperlyConfigured(Exception):
+    """LogPipe is somehow improperly configured"""
+    pass
