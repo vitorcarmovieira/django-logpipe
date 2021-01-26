@@ -116,7 +116,10 @@ class Consumer(object):
         consumers_conf = settings.get('CONSUMERS', {})
         
         if self.topic_name in consumers_conf:
-            return consumers_conf[self.topic_name]["bootstrap_server"]
+            server = consumers_conf[self.topic_name]["bootstrap_server"]
+            if server not in servers:
+                raise ImproperlyConfigured(f"You must define a '{server}' bootstrap server")
+            return servers[server]
         else:
             return servers[DEFAULT_SERVER_ALIAS]
 
