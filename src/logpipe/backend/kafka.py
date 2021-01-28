@@ -151,6 +151,6 @@ class Producer(object):
         servers = settings.get('KAFKA_BOOTSTRAP_SERVERS')
         retries = settings.get('KAFKA_MAX_SEND_RETRIES', 0)
         return {
-            'bootstrap_servers': servers,
+            'bootstrap_servers': servers[DEFAULT_SERVER_ALIAS]["bootstrap_servers"],
             'retries': retries,
         }
