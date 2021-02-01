@@ -37,7 +37,10 @@ def parse(data):
     data = _bytes(data)
     code, body = data.split(_delim, 1)
     if code not in _formats:
-        raise UnknownFormatError('Could not find parser for format %s' % code.decode())
+        try:
+            return _formats['json']['parser'].parse( BytesIO(body) )
+        except Exception:
+            raise UnknownFormatError('Could not find parser for format %s' % code.decode())
     return _formats[code]['parser'].parse( BytesIO(body) )
 
 
