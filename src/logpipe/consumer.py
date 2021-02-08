@@ -65,6 +65,9 @@ class Consumer(object):
         self.serializer_classes = {}
         self.ignored_message_types = set([])
 
+    def on_receive_message(self, message, serializer):
+        serializer.save()
+
 
     def add_ignored_message_type(self, message_type):
         self.ignored_message_types.add(message_type)
@@ -87,7 +90,7 @@ class Consumer(object):
         for message, serializer in self:
             with transaction.atomic():
                 try:
-                    serializer.save()
+                    self.on_receive_message(message=message, serializer=serializer)
                     self.commit(message)
                 except Exception as e:
                     info = (message.key, message.topic, message.partition, message.offset)
